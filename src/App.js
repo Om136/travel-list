@@ -7,7 +7,6 @@ export default function App() {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
 
-  // Fetch items from Redis via the backend
   useEffect(() => {
     fetch(API_URL)
       .then((res) => res.json())
@@ -15,7 +14,6 @@ export default function App() {
       .catch(console.error);
   }, []);
 
-  // Save items to Redis via the backend
   const saveItemsToServer = (updatedItems) => {
     fetch(API_URL, {
       method: "POST",
@@ -57,47 +55,71 @@ export default function App() {
   };
 
   return (
-    <div>
-      <h1>Packing List App</h1>
+    <div className="app">
+      <header className="header">
+        <h1>Packing List</h1>
+      </header>
 
-      {/* Form to Add Items */}
-      <form onSubmit={handleAddItem}>
-        <input
-          type="text"
-          placeholder="Item description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <select
-          value={quantity}
-          onChange={(e) => setQuantity(Number(e.target.value))}
-        >
-          {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
-            <option value={num} key={num}>
-              {num}
-            </option>
-          ))}
-        </select>
-        <button type="submit">Add Item</button>
+      <form className="add-form" onSubmit={handleAddItem}>
+        <div className="form-group">
+          <input
+            type="text"
+            placeholder="Add new item..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="input-text"
+          />
+          <select
+            value={quantity}
+            onChange={(e) => setQuantity(Number(e.target.value))}
+            className="select-quantity"
+          >
+            {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+              <option value={num} key={num}>
+                {num}
+              </option>
+            ))}
+          </select>
+          <button type="submit" className="btn btn-add">
+            Add to list
+          </button>
+        </div>
       </form>
 
-      {/* Packing List */}
-      <ul>
-        {items.map((item) => (
-          <li key={item.id}>
-            <input
-              type="checkbox"
-              checked={item.packed}
-              onChange={() => handleToggleItem(item.id)}
-            />
-            {item.quantity} {item.description}
-            <button onClick={() => handleDeleteItem(item.id)}>❌</button>
-          </li>
-        ))}
-      </ul>
+      <main className="list-container">
+        <ul className="items-list">
+          {items.map((item) => (
+            <li
+              key={item.id}
+              className={`list-item ${item.packed ? "packed" : ""}`}
+            >
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={item.packed}
+                  onChange={() => handleToggleItem(item.id)}
+                />
+                <span className="checkbox-custom"></span>
+              </label>
+              <span className="item-text">
+                {item.quantity} × {item.description}
+              </span>
+              <button
+                onClick={() => handleDeleteItem(item.id)}
+                className="btn-delete"
+              >
+                ×
+              </button>
+            </li>
+          ))}
+        </ul>
+      </main>
 
-      {/* Clear List Button */}
-      <button onClick={handleClearList}>Clear List</button>
+      <footer className="footer">
+        <button onClick={handleClearList} className="btn btn-clear">
+          Clear list
+        </button>
+      </footer>
     </div>
   );
 }
